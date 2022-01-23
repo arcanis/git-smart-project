@@ -16,7 +16,7 @@ yarn add git-smart-project
 
 Returns the point from where the current branch originates.
 
-### `getChangedFiles(git: GitFn, opts: {...}): Promise<string[]>`
+### `getChangedFiles(git: GitFn, opts: {...}): Promise<GitStatus[]>`
 
 Returns the list of changed files in the current branch, compared its base.
 
