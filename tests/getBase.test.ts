@@ -10,7 +10,9 @@ const defaultRepo = async (env: TestEnvironment) => {
   await writeAndCommit(env, `file3` as PortablePath, `file3`);
 };
 
-describe(`getBase`, () => {
+describe(`getBase`, function () {
+  this.timeout(20000);
+
   it(`should detect the base commit when branching out of master`, makeTestEnvironment(async env => {
     await defaultRepo(env);
 

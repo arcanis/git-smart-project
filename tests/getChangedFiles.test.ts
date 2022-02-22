@@ -10,7 +10,9 @@ const defaultRepo = async (env: TestEnvironment) => {
   await writeAndCommit(env, `file3` as PortablePath, `file3`);
 };
 
-describe(`getChangedFiles`, () => {
+describe(`getChangedFiles`, function () {
+  this.timeout(20000);
+
   it(`should detect new files in feature branch (commited)`, makeTestEnvironment(async env => {
     await defaultRepo(env);
 
@@ -31,6 +33,17 @@ describe(`getChangedFiles`, () => {
 
     await expect(getChangedFiles(env.git)).to.eventually.deep.equal([
       {file: `file4`, status: `A`},
+    ]);
+  }));
+
+  it(`should detect new files in feature branch (untracked)`, makeTestEnvironment(async env => {
+    await defaultRepo(env);
+
+    await env.git(`checkout`, `-b`, `my/feature`);
+    await env.fs.writeFilePromise(`file4` as PortablePath, `update`);
+
+    await expect(getChangedFiles(env.git)).to.eventually.deep.equal([
+      {file: `file4`, status: `?`},
     ]);
   }));
 

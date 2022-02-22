@@ -6,6 +6,7 @@ export enum GitStatus {
   Added = `A`,
   Deleted = `D`,
   Modified = `M`,
+  Untracked = `?`,
 }
 
 export async function gitOne(git: GitFn, ...args: Array<string>) {
@@ -37,10 +38,16 @@ export async function getBase(git: GitFn, {referenceBranches = defaultReferenceB
 
 export async function getChangedFiles(git: GitFn, {referenceBranches}: {referenceBranches?: Array<string>} = {}) {
   const mergeBase = await getBase(git, {referenceBranches});
-  const results = await gitAll(git, `diff`, `--name-status`, `--no-renames`, `--diff-filter=ADM`, mergeBase);
 
-  return results.map(entry => {
+  const [tracked, untracked] = await Promise.all([
+    gitAll(git, `diff`, `--name-status`, `--no-renames`, `--diff-filter=ADM`, mergeBase),
+    gitAll(git, `ls-files`, `--others`, `--exclude-standard`),
+  ]);
+
+  return tracked.map(entry => {
     const [status, file] = entry.split(/\t/);
     return {status: status as GitStatus, file};
-  });
+  }).concat(untracked.map(file => {
+    return {status: GitStatus.Untracked, file};
+  }));
 }
