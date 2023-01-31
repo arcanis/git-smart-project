@@ -15,8 +15,8 @@ export async function gitOne(git: GitFn, ...args: Array<string>) {
 }
 
 export async function gitAll(git: GitFn, ...args: Array<string>) {
-  const result = await gitOne(git, ...args);
-  return result ? result.split(/\n/) : [];
+  const result = await git(...args);
+  return result ? result.stdout.split(/\n/).slice(0, -1) : [];
 }
 
 export async function getBase(git: GitFn, {referenceBranches = defaultReferenceBranches}: {referenceBranches?: Array<string>, remotePriorities?: Array<string>} = {}) {
@@ -36,12 +36,16 @@ export async function getBase(git: GitFn, {referenceBranches = defaultReferenceB
   }
 }
 
-export async function getChangedFiles(git: GitFn, {referenceBranches}: {referenceBranches?: Array<string>} = {}) {
+export async function getChangedFiles(git: GitFn, {pattern, referenceBranches}: {pattern?: string, referenceBranches?: Array<string>} = {}) {
   const mergeBase = await getBase(git, {referenceBranches});
 
+  const patternArgs = typeof pattern !== `undefined`
+    ? [`--`, pattern]
+    : [];
+
   const [tracked, untracked] = await Promise.all([
-    gitAll(git, `diff`, `--name-status`, `--no-renames`, `--diff-filter=ADM`, mergeBase),
-    gitAll(git, `ls-files`, `--others`, `--exclude-standard`),
+    gitAll(git, `diff`, `--name-status`, `--no-renames`, `--diff-filter=ADM`, mergeBase, ...patternArgs),
+    gitAll(git, `ls-files`, `--others`, `--exclude-standard`, ...patternArgs),
   ]);
 
   return tracked.map(entry => {
@@ -50,4 +54,30 @@ export async function getChangedFiles(git: GitFn, {referenceBranches}: {referenc
   }).concat(untracked.map(file => {
     return {status: GitStatus.Untracked, file};
   }));
+}
+
+export async function getFiles(git: GitFn, {pattern}: {pattern?: string} = {}) {
+  const patternArgs = typeof pattern !== `undefined`
+    ? [`--`, pattern]
+    : [];
+
+  const [tracked, status] = await Promise.all([
+    gitAll(git, `ls-files`, ...patternArgs),
+    gitAll(git, `status`, `--porcelain`, `--no-renames`, ...patternArgs),
+  ]);
+
+  const set = new Set(tracked);
+
+  for (const entry of status) {
+    const action = entry.slice(0, 2);
+    const path = entry.slice(3);
+
+    if (action === ` D`) {
+      set.delete(path);
+    } else {
+      set.add(path);
+    }
+  }
+
+  return [...set].sort();
 }

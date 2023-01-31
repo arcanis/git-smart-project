@@ -90,4 +90,18 @@ describe(`getChangedFiles`, function () {
 
     await expect(getChangedFiles(env.git)).to.eventually.deep.equal([]);
   }));
+
+  it(`can be restricted to specific patterns`, makeTestEnvironment(async env => {
+    await defaultRepo(env);
+
+    await env.git(`checkout`, `-b`, `my/feature`);
+    await writeAndCommit(env, `file3` as PortablePath, `update`);
+    await writeAndCommit(env, `file31` as PortablePath, `update`);
+    await writeAndCommit(env, `file4` as PortablePath, `update`);
+
+    await expect(getChangedFiles(env.git, {pattern: `file3*`})).to.eventually.deep.equal([
+      {file: `file3`, status: `M`},
+      {file: `file31`, status: `A`},
+    ]);
+  }));
 });
