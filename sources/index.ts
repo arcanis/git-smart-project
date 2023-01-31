@@ -61,23 +61,19 @@ export async function getFiles(git: GitFn, {pattern}: {pattern?: string} = {}) {
     ? [`--`, pattern]
     : [];
 
-  const [tracked, status] = await Promise.all([
+  const [tracked, others, deleted] = await Promise.all([
     gitAll(git, `ls-files`, ...patternArgs),
-    gitAll(git, `status`, `--porcelain`, `--no-renames`, ...patternArgs),
+    gitAll(git, `ls-files`, `--others`, `--exclude-standard`, ...patternArgs),
+    gitAll(git, `ls-files`, `--deleted`, ...patternArgs),
   ]);
 
-  const set = new Set(tracked);
+  const set = new Set([
+    ...tracked,
+    ...others,
+  ]);
 
-  for (const entry of status) {
-    const action = entry.slice(0, 2);
-    const path = entry.slice(3);
-
-    if (action === ` D`) {
-      set.delete(path);
-    } else {
-      set.add(path);
-    }
-  }
+  for (const entry of deleted)
+    set.delete(entry);
 
   return [...set].sort();
 }
