@@ -1,6 +1,6 @@
 {
   "name": "git-smart-project",
-  "version": "1.2.1",
+  "version": "1.2.2",
   "main": "./sources/index",
   "license": "MIT",
   "sideEffects": false,
@@ -12,6 +12,7 @@
   "devDependencies": {
     "@rollup/plugin-node-resolve": "^13.1.3",
     "@rollup/plugin-typescript": "^8.3.0",
+    "@types/braces": "^3.0.1",
     "@types/chai": "^4.3.0",
     "@types/chai-as-promised": "^7.1.4",
     "@types/mocha": "^9.1.0",
@@ -42,5 +43,8 @@
   },
   "files": [
     "lib"
-  ]
+  ],
+  "dependencies": {
+    "braces": "^3.0.2"
+  }
 }

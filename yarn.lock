@@ -195,6 +195,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@types/braces@npm:^3.0.1":
+  version: 3.0.1
+  resolution: "@types/braces@npm:3.0.1"
+  checksum: 3749f7673a03d498ddb2f199b222bb403e53e78ac05a599c757c2049703ece802602c78640af0ff826be0fd2ea8b03daff04ce18806ed739592302195b7a569b
+  languageName: node
+  linkType: hard
+
 "@types/chai-as-promised@npm:^7.1.4":
   version: 7.1.4
   resolution: "@types/chai-as-promised@npm:7.1.4"
@@ -625,7 +632,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"braces@npm:^3.0.1, braces@npm:~3.0.2":
+"braces@npm:^3.0.1, braces@npm:^3.0.2, braces@npm:~3.0.2":
   version: 3.0.2
   resolution: "braces@npm:3.0.2"
   dependencies:
@@ -1438,6 +1445,7 @@ __metadata:
   dependencies:
     "@rollup/plugin-node-resolve": ^13.1.3
     "@rollup/plugin-typescript": ^8.3.0
+    "@types/braces": ^3.0.1
     "@types/chai": ^4.3.0
     "@types/chai-as-promised": ^7.1.4
     "@types/mocha": ^9.1.0
@@ -1446,6 +1454,7 @@ __metadata:
     "@typescript-eslint/parser": ^5.10.0
     "@yarnpkg/eslint-config": ^0.5.0-rc.11
     "@yarnpkg/fslib": ^2.6.1-rc.6
+    braces: ^3.0.2
     chai: ^4.3.4
     chai-as-promised: ^7.1.1
     eslint: ^8.7.0

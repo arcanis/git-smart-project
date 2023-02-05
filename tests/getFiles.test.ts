@@ -75,4 +75,13 @@ describe(`getFiles`, function () {
       `file23`,
     ]);
   }));
+
+  it(`accepts braces in its glob patterns`, makeTestEnvironment(async env => {
+    await defaultRepo(env);
+
+    await expect(getFiles(env.git, {pattern: `file{1,3}`})).to.eventually.deep.equal([
+      `file1`,
+      `file3`,
+    ]);
+  }));
 });
