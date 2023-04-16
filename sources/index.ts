@@ -2,6 +2,10 @@ import braces from 'braces';
 
 const defaultReferenceBranches = [`upstream/main`, `origin/main`, `main`, `upstream/master`, `origin/master`, `master`];
 
+function globPattern(args: Array<string>) {
+  return args.map(arg => `:(glob)${arg}`);
+}
+
 export type GitFn = (...args: Array<string>) => Promise<{stdout: string, stderr: string}>;
 
 export enum GitStatus {
@@ -42,7 +46,7 @@ export async function getChangedFiles(git: GitFn, {pattern, referenceBranches}: 
   const mergeBase = await getBase(git, {referenceBranches});
 
   const patternArgs = typeof pattern !== `undefined`
-    ? [`--`, ...braces(pattern, {expand: true})]
+    ? [`--`, ...globPattern(braces(pattern, {expand: true}))]
     : [];
 
   const [tracked, untracked] = await Promise.all([
@@ -60,7 +64,7 @@ export async function getChangedFiles(git: GitFn, {pattern, referenceBranches}: 
 
 export async function getFiles(git: GitFn, {pattern}: {pattern?: string} = {}) {
   const patternArgs = typeof pattern !== `undefined`
-    ? [`--`, ...braces(pattern, {expand: true})]
+    ? [`--`, ...globPattern(braces(pattern, {expand: true}))]
     : [];
 
   const [tracked, others, deleted] = await Promise.all([
